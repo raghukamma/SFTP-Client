@@ -38,10 +38,13 @@ class SFTPClient:
             self.state = self.s_exit
 
     def connect(self):
-        # ISSUE #4: gather connection info
+        host = input("Enter the name of the host to connect to: ")
+        user = input("Enter your username: ")
+        passw = input("Enter your password: ")
+
         # ISSUE #17: check if saved, ask if want to save etc...
 
-        # self.shell.login(host, user, passw)
+        self.shell.login(host, user, passw)
         self.shell.start()
         self.state = self.s_main
 

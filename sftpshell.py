@@ -32,7 +32,9 @@ class SFTPShell:
 
     # MUST BE CALLED BEFORE start()
     def login(self, host, user, passw):
-        self.sftp = pysftp.Connection(host, user, password=passw)
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None
+        self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
 
     # decodes the user command
     def decode_command(self, user_input):

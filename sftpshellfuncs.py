@@ -4,6 +4,8 @@ this file should contain functions that the shell executes through the command d
 '''
 
 import os
+import warnings
+warnings.filterwarnings('ignore','.*Failed to load HostKeys.*')
 
 commands = dict()
 
