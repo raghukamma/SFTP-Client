@@ -72,12 +72,42 @@ def help(sftp, args=None):
             currw = currw + len(key) + 2
     print('\n')
 
+#Varsha
+#downloads file from remote server 
+def get_file_remote_server(sftp, args=None):
+    print("Enter the filname with the extension of the file from the current directory")
+    filename = input()
+    if sftp.isfile(filename):
+        print(f"Downloading file:{filename} from current directory")
+        if getfile(sftp, filename):
+            print(f"{filename} downloaded successfully")
+        else:
+            print("Downloading failed. \nRetrying to download the file again....")
+            if getfile(filename):
+                print("Downloaded successfully")
+            else:
+                print("Download failed again.\n Please try again after some time")
+    else:
+        print(f"Filename you entered does not exist.\n Please try again")
+
+
+def getfile(sftp, filename):    
+    try:
+        sftp.get(filename, preserve_mtime=True)
+    except IOError as e:
+        return False
+    
+    if os.path.exists('./'+filename):
+        return True
+    else:
+        return False
 
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
 commands["ls"] = list_content
+commands["downloadfile"] = get_file_remote_server
 
 
 del commands["command_name"] # deletes example from command list

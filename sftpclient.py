@@ -4,6 +4,7 @@ This file contains the client menus before connected to a server
 '''
 
 import sftpshell
+import getpass
 
 class SFTPClient:
     # Enumerated Menu States
@@ -40,7 +41,7 @@ class SFTPClient:
     def connect(self):
         host = input("Enter the name of the host to connect to: ")
         user = input("Enter your username: ")
-        passw = input("Enter your password: ")
+        passw = getpass.getpass(stream=None)
 
         # ISSUE #17: check if saved, ask if want to save etc...
 
