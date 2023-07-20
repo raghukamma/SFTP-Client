@@ -25,6 +25,33 @@ def command_function_name(sftp, args):
     
 # functions go here:
 
+# below function lists all directories and files in the pwd on the server
+# it supports simple "ls" or "ls -l" to show file attributes
+def list_content(sftp, args):
+    if sftp == None:
+        print("\nWarning: SFTP client is not connected")
+        return
+    
+    path = '.' # set the default path to pwd
+    show_attributes = False
+
+    if len(args) > 1 and args[1] == '-l':
+        show_attributes = True
+
+    if len(args) > 1 and args[1] != '-l':
+        print("Error: Invalid argument. Currently ls command only supports -l argument. Please enter 'ls -l' to show file attributes")
+        return
+
+    try:
+        directory = sftp.listdir_attr(path)
+        for entry in directory:
+            if show_attributes:
+                attributes = entry.longname.split()
+                print(' '.join(attributes))
+            else:
+                print(entry.filename)
+    except Exception as e:
+        print(f"Error listing directory or files: {str(e)}")
 
 
 # prints all commands
@@ -50,6 +77,7 @@ def help(sftp, args=None):
 commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
+commands["ls"] = list_content
 
 
 del commands["command_name"] # deletes example from command list
