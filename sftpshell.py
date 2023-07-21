@@ -32,10 +32,9 @@ class SFTPShell:
 
     # MUST BE CALLED BEFORE start()
     def login(self, host, user, passw):
-        if self.sftp is None:
-            cnopts = pysftp.CnOpts()
-            cnopts.hostkeys = None
-            self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None
+        self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
 
     # decodes the user command
     def decode_command(self, user_input):
@@ -67,7 +66,7 @@ class SFTPShell:
         if self.sftp == None:
             print("\nWarning: SFTP client is not connected")
 
-        self.command_dict["exit"] = self.exit
+        # self.command_dict["exit"] = self.exit
         print("\nType 'help' to view a full list of commands\n")
         self.main_loop()
             
