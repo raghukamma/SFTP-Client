@@ -107,7 +107,7 @@ commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
 commands["ls"] = list_content
-commands["downloadfile"] = get_file_remote_server
+commands["getFile"] = get_file_remote_server
 
 
 del commands["command_name"] # deletes example from command list
