@@ -53,7 +53,7 @@ def list_content(sftp, args):
     except Exception as e:
         print(f"Error listing directory or files: {str(e)}")
 
-
+# Saiteja G 7/19/2023
 # Function to close SFTP connection
 def logout(sftp):
     try:
