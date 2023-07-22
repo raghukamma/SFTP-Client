@@ -58,7 +58,7 @@ def list_content(sftp, args):
 def logout(sftp):
     try:
         if sftp:
-            sftp.exit()
+            sftp.close()
             sftp = None
             print("SFTP connection closed successfully.")
     except Exception as e:
@@ -68,14 +68,14 @@ def logout(sftp):
 # Function to handle logout command
 # command to be used is "logout"
 def tologOut(sftp, args):
-    print("Are you sure to logout? (yes/no)")
+    print("Are you sure to close the connection? (yes/no)")
     value = input().strip().lower()
     try:
         if value == "yes":
             logout(sftp) 
             exit()
         elif value == "no":
-            print("Logout not successful as user selected 'No'.")
+            print("closing the connection not successful as user selected 'No'.")
         else:
             print("Please give input as 'yes' or 'no'.")
             tologOut(sftp, args)
@@ -107,6 +107,6 @@ commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
 commands["ls"] = list_content
-commands["logout"] = tologOut
+commands["closeconn"] = tologOut
 
 del commands["command_name"] # deletes example from command list

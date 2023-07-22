@@ -63,10 +63,11 @@ class SFTPShell:
 
     # starts the SFTP shell, call after loging in
     def start(self):
+        self.is_running = True
         if self.sftp == None:
             print("\nWarning: SFTP client is not connected")
 
-        # self.command_dict["exit"] = self.exit
+        self.command_dict["logoff"] = self.exit
         print("\nType 'help' to view a full list of commands\n")
         self.main_loop()
             
