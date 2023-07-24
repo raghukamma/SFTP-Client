@@ -131,6 +131,21 @@ def getfile(sftp, filename):
     else:
         return False
 
+def list_files_folder_local(sftp, args=None):
+    path = "."
+    try:
+        print("Displaying the files and folders from current directory present in the local machine: ")
+        entries = os.listdir(path)
+        for entry in entries:
+            entry_path = os.path.join(path, entry)
+            if os.path.isdir(entry_path):
+                print(entry)
+            else:
+                print(entry)
+
+    except OSError as e:
+        print(f"Error: {e}")
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -138,7 +153,7 @@ commands["help"] = help
 commands["ls"] = list_content
 
 commands["getFile"] = get_file_remote_server
-
+commands["list_local"] = list_files_folder_local
 
 commands["closeconn"] = tologOut
 
