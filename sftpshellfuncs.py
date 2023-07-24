@@ -20,7 +20,7 @@ commands = dict()
 def command_function_name(sftp, args):
     if sftp == None:
         return
-    print("this is an exmple command")
+    print("this is an example command")
     return
     
 # functions go here:
@@ -53,7 +53,36 @@ def list_content(sftp, args):
     except Exception as e:
         print(f"Error listing directory or files: {str(e)}")
 
+# Saiteja G 7/19/2023
+# Function to close SFTP connection
+def logout(sftp):
+    try:
+        if sftp:
+            sftp.close()
+            sftp = None
+            print("SFTP connection closed successfully.")
+    except Exception as e:
+        print(f"Error closing SFTP connection: {e}")
+        
 
+# Function to handle logout command
+# command to be used is "logout"
+def tologOut(sftp, args):
+    print("Are you sure to close the connection? (yes/no)")
+    value = input().strip().lower()
+    try:
+        if value == "yes":
+            logout(sftp) 
+            exit()
+        elif value == "no":
+            print("closing the connection not successful as user selected 'No'.")
+        else:
+            print("Please give input as 'yes' or 'no'.")
+            tologOut(sftp, args)
+    except Exception as e:
+        print(f"Error closing SFTP connection: {e}")
+
+    
 # prints all commands
 def help(sftp, args=None):
     # this does not print the command names aligned, only as a list separated 
@@ -78,6 +107,6 @@ commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
 commands["ls"] = list_content
-
+commands["closeconn"] = tologOut
 
 del commands["command_name"] # deletes example from command list
