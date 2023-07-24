@@ -136,9 +136,10 @@ commands["command_name"] = command_function_name
 # copy to here:
 commands["help"] = help
 commands["ls"] = list_content
+commands["get_file"] = get_file_remote_server
 
-commands["getFile"] = get_file_remote_server
 
+commands["closeconn"] = tologOut
 
 commands["closeconn"] = tologOut
 
