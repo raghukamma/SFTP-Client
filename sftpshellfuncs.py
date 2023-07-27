@@ -152,6 +152,6 @@ commands["command_name"] = command_function_name
 commands["help"] = help
 commands["ls"] = list_content
 commands["get_file"] = get_file_remote_server
-commands["list_local"] = list_files_folder_local
+commands["lsl"] = list_files_folder_local
 commands["closeconn"] = tologOut
 del commands["command_name"] # deletes example from command list
