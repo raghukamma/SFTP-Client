@@ -65,6 +65,7 @@ def logout(sftp):
         print(f"Error closing SFTP connection: {e}")
         
 
+# Saiteja G 7/19/2023
 # Function to handle logout command
 # command to be used is "logout"
 def tologOut(sftp, args):
@@ -130,6 +131,29 @@ def getfile(sftp, filename):
         return True
     else:
         return False
+    
+    
+# Saiteja G 7/24/2023
+# Function to be used to download multiple files   
+def getMultiple(sftp, args):
+    if sftp == None:
+        print("\nWarning: SFTP client is not connected")
+        return
+   
+    print("Enter the file names from current directory with space inbetween. (Ex: test.txt test2.txt)")
+    files = input()   # User Input
+    multiple = files.split() # Multiple check
+    for i in multiple:
+        if sftp.isfile(i) and sftp.exists(i):
+            print(f"Selected file:{i}")
+            if getfile(sftp,i):
+                print("Downloading....\n Successfully Downloaded.")
+            else:
+                print("Download failed. Please try again!")
+        else:
+            print(f"Filename you entered does not exist.\n Please try again!") 
+            
+            
 
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
@@ -137,10 +161,7 @@ commands["command_name"] = command_function_name
 commands["help"] = help
 commands["ls"] = list_content
 commands["get_file"] = get_file_remote_server
-
-
 commands["closeconn"] = tologOut
-
-commands["closeconn"] = tologOut
+commands["mget"] = getMultiple
 
 del commands["command_name"] # deletes example from command list
