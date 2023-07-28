@@ -53,6 +53,34 @@ def list_content(sftp, args):
     except Exception as e:
         print(f"Error listing directory or files: {str(e)}")
 
+#below function creates directory on remote server using mkdir command
+def make_directory(sftp, args):
+    if sftp == None:
+        print("\nWarning: SFTP client is not connected")
+        return
+    
+    #show error message if no argument is passed
+    if len(args) < 2:
+        print("Error: Invalid argument. Please enter the directory name to be created. For example: mkdir new_directory")
+        return
+    
+    #show error message if more than one argument is passed
+    if len(args) > 2:
+        print("Error: Invalid argument. Please enter only one argument. For example: mkdir new_directory")
+        return
+    
+    directory_name = args[1] #get the directory name from the argument
+    try:
+        #check if the directory already exists
+        if sftp.isdir(directory_name):
+            print(f"Error: There is an existing directory with the name '{directory_name}' Please use another name for creating a new directory")
+            return
+        else:
+            sftp.mkdir(directory_name)
+            print(f"Directory {directory_name} created successfully")
+    except Exception as e:
+        print(f"Error creating directory: {str(e)}")
+
 # Saiteja G 7/19/2023
 # Function to close SFTP connection
 def logout(sftp):
@@ -155,6 +183,21 @@ def getMultiple(sftp, args):
             
             
 
+def list_files_folder_local(sftp, args=None):
+    path = "."
+    try:
+        print("Displaying the files and folders from current directory present in the local machine: ")
+        entries = os.listdir(path)
+        for entry in entries:
+            entry_path = os.path.join(path, entry)
+            if os.path.isdir(entry_path):
+                print(entry)
+            else:
+                print(entry)
+
+    except OSError as e:
+        print(f"Error: {e}")
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -163,5 +206,6 @@ commands["ls"] = list_content
 commands["get_file"] = get_file_remote_server
 commands["closeconn"] = tologOut
 commands["mget"] = getMultiple
-
+commands["mkdir"] = make_directory
+commands["lsl"] = list_files_folder_local
 del commands["command_name"] # deletes example from command list
