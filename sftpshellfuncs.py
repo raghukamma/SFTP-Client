@@ -198,6 +198,25 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+#Varsha
+def rename_file_on_local(sftp, args=None):
+     print("Enter the name of the file along with it's extension to be renamed on the local machine")
+     filerenamel= input()
+     if os.path.isfile(filerenamel) and os.path.exists(filerenamel):
+        print("Enter the new name along with it's extension for the file")
+        newnamel = input()
+        if os.path.isfile(newnamel) and os.path.exists(newnamel):
+            print("the name you entered already exists")
+        else:
+            os.rename(filerenamel, newnamel)
+            if os.path.isfile(newnamel) and os.path.exists(newnamel):
+                print("The file has been renamed successfully") 
+            else:
+                print("The file could not be renamed. Please try again")
+     else:
+        print("The file you wish to rename does not exist. Please enter a valid filename")
+
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -208,4 +227,5 @@ commands["closeconn"] = tologOut
 commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
+commands["renamel"] = rename_file_on_local
 del commands["command_name"] # deletes example from command list
