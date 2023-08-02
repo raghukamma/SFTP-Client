@@ -101,7 +101,7 @@ def tologOut(sftp, args):
     value = input().strip().lower()
     try:
         if value == "yes":
-            logout(sftp) 
+            logout(sftp) #connection closes using above logout function.
             exit()
         elif value == "no":
             print("closing the connection not successful as user selected 'No'.")
@@ -181,7 +181,27 @@ def getMultiple(sftp, args):
         else:
             print(f"Filename you entered does not exist.\n Please try again!") 
             
-            
+
+# Saiteja G 7/30/2023
+# Function to copy directory on remote server
+def copyDir(sftp, args):
+    print('Enter the directory name that needs to be copied:')
+    dirname = input() # Directory that needs to be copied
+    if sftp.isdir(dirname):
+        print("Enter the destination(Directory name):")
+        dirdestination = input() # Destination of the directory that being copied to
+        try:
+            command = f'cp -r {dirname} {dirdestination}' # command for the copy
+            result = sftp.execute(command) # Command execution
+            if not result:
+                print(f"Copying {dirname} to {dirdestination}.")
+            else:
+                print("Error copying the directory")
+        except Exception as e: # Error handling
+            print("Error performing this action.\n Please try again!")
+    else:
+        print("This directory doesnot exist!")
+        
 
 def list_files_folder_local(sftp, args=None):
     path = "."
@@ -208,4 +228,5 @@ commands["closeconn"] = tologOut
 commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
+commands["copydir"] = copyDir
 del commands["command_name"] # deletes example from command list
