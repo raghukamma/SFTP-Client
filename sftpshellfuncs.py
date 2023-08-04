@@ -198,6 +198,20 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+def delFileRemote(sftp, args):
+    #print("Please enter the name of the file you wish to delete")
+    for x in args:
+        if x != "rm":
+            remotefile = x
+            try:
+                sftp.remove(remotefile)
+            except IOError:
+                print("Deletion unsuccessful: " + x + " does not exist")
+            except: 
+                print("Deletion unsuccessful")
+            else:
+                print( x + " deleted successfully!")
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -205,6 +219,7 @@ commands["help"] = help
 commands["ls"] = list_content
 commands["get_file"] = get_file_remote_server
 commands["closeconn"] = tologOut
+commands["rm"] = delFileRemote
 commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
