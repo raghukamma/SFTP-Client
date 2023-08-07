@@ -218,6 +218,7 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+
 def chDirRem(sftp, args):
     if(len(args) > 2):
         print("Please only enter one directory at a time. ex: cd remoteDirectory")
@@ -230,6 +231,23 @@ def chDirRem(sftp, args):
         print("-> " + sftp.pwd)
     else:
         print("That directory does not exist")
+
+def renameRemote(sftp, args):
+    print("Please enter the file or directory to be renamed:")
+    src = input()
+    if sftp.exists(src):
+        print("Please enter the new name:")
+        dest = input()
+        try:
+            sftp.rename(src, dest)
+        except IOError:
+            print("Oops, you entered an invalid file name")
+            return
+        else:
+            print(src + " successfully renamed " + dest)
+            return
+    else:
+        print("The file you entered does not exist.")
         
 #Varsha
 def rename_file_on_local(sftp, args=None):
@@ -276,6 +294,7 @@ commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
 commands["cd"] = chDirRem
+commands["rename"] = renameRemote
 commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
 del commands["command_name"] # deletes example from command list
