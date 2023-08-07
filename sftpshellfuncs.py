@@ -235,6 +235,25 @@ def renameRemote(sftp, args):
     else:
         print("The file you entered does not exist.")
         
+#Varsha
+def rename_file_on_local(sftp, args=None):
+     print("Enter the name of the file along with it's extension to be renamed on the local machine")
+     filerenamel= input()
+     if os.path.isfile(filerenamel) and os.path.exists(filerenamel):
+        print("Enter the new name along with it's extension for the file")
+        newnamel = input()
+        if os.path.isfile(newnamel) and os.path.exists(newnamel):
+            print("the name you entered already exists")
+        else:
+            os.rename(filerenamel, newnamel)
+            if os.path.isfile(newnamel) and os.path.exists(newnamel):
+                print("The file has been renamed successfully") 
+            else:
+                print("The file could not be renamed. Please try again")
+     else:
+        print("The file you wish to rename does not exist. Please enter a valid filename")
+
+
 def delFileRemote(sftp, args):
     #print("Please enter the name of the file you wish to delete")
     for x in args:
@@ -249,6 +268,7 @@ def delFileRemote(sftp, args):
             else:
                 print( x + " deleted successfully!")
 
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -261,5 +281,6 @@ commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
 commands["rename"] = renameRemote
+commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
 del commands["command_name"] # deletes example from command list
