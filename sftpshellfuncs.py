@@ -218,6 +218,19 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+def chDirRem(sftp, args):
+    if(len(args) > 2):
+        print("Please only enter one directory at a time. ex: cd remoteDirectory")
+        return
+    if(len(args) < 2):
+        print("Please enter the directory to change into. ex: cd remoteDirectory")
+        return
+    if(sftp.exists(args[1])):
+        sftp.chdir(args[1])
+        print("-> " + sftp.pwd)
+    else:
+        print("That directory does not exist")
+        
 #Layla
 def renameRemote(sftp, args):
     if len(args) != 3:
@@ -255,7 +268,6 @@ def rename_file_on_local(sftp, args=None):
      else:
         print("The file you wish to rename does not exist. Please enter a valid filename")
 
-
 #Layla
 def delFileRemote(sftp, args):
     for x in args:
@@ -282,6 +294,7 @@ commands["rm"] = delFileRemote
 commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
+commands["cd"] = chDirRem
 commands["rename"] = renameRemote
 commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
