@@ -1,10 +1,33 @@
+import sftpclient
+import pysftp
+import sftpshellfuncs
 #pytest unit testing file 
-
-#sample tests
-def test_always_passes():
-    assert True
-
-def test_always_fails():
-    assert False
-
 #add your unit tests below
+
+def test_remove_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='laysmith', password='n8Is@x8zbb', cnopts=cnopts)
+    #create remote file
+    valfoo.put('test.txt')
+    #call remove remote
+    x = ["rm", "test.txt"]
+    sftpshellfuncs.commands["rm"](valfoo, x)
+    #assert the file has been removed
+    assert valfoo.exists('test.txt') == False
+
+def test_rename_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='laysmith', password='n8Is@x8zbb', cnopts=cnopts)
+    #create remote file
+    valfoo.put('test.txt')
+    #call rename remote
+    x = ["rename", "test.txt", "success.txt"]
+    sftpshellfuncs.commands["rename"](valfoo, x)
+    assert valfoo.exists('success.txt') == True
+
+
+

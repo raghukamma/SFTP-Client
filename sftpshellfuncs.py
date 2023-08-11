@@ -218,22 +218,24 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+#Layla
 def renameRemote(sftp, args):
-    print("Please enter the file or directory to be renamed:")
-    src = input()
+    if len(args) != 3:
+        print("How to use the rename command: rename src.txt dest.txt")
+        return
+    src = args[1]
     if sftp.exists(src):
-        print("Please enter the new name:")
-        dest = input()
+        dest = args[2]
         try:
             sftp.rename(src, dest)
         except IOError:
-            print("Oops, you entered an invalid file name")
+            print("Oops, you entered an invalid destination file name")
             return
         else:
             print(src + " successfully renamed " + dest)
             return
     else:
-        print("The file you entered does not exist.")
+        print("The source file you entered does not exist.")
         
 #Varsha
 def rename_file_on_local(sftp, args=None):
@@ -254,8 +256,8 @@ def rename_file_on_local(sftp, args=None):
         print("The file you wish to rename does not exist. Please enter a valid filename")
 
 
+#Layla
 def delFileRemote(sftp, args):
-    #print("Please enter the name of the file you wish to delete")
     for x in args:
         if x != "rm":
             remotefile = x
