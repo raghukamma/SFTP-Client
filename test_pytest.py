@@ -8,7 +8,7 @@ def test_remove_remote():
     #setting the connection
     cnopts = pysftp.CnOpts()
     cnopts.hostkeys = None
-    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='laysmith', password='n8Is@x8zbb', cnopts=cnopts)
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='', password='', cnopts=cnopts)
     #create remote file
     valfoo.put('test.txt')
     #call remove remote
@@ -21,7 +21,7 @@ def test_rename_remote():
     #setting the connection
     cnopts = pysftp.CnOpts()
     cnopts.hostkeys = None
-    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='laysmith', password='n8Is@x8zbb', cnopts=cnopts)
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='', password='', cnopts=cnopts)
     #create remote file
     valfoo.put('test.txt')
     #call rename remote
