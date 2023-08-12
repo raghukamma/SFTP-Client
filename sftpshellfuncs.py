@@ -282,6 +282,23 @@ def delFileRemote(sftp, args):
                 print( x + " deleted successfully!")
 
 
+# Saiteja G 8/8/2023
+# Function to delete directory on remote server
+def deleteDir(sftp, args):
+    for x in args:
+        if x != "rmd":
+            remotedir = x
+            if sftp.exists(remotedir):
+                try:
+                    sftp.execute(f"rm -r {remotedir}")
+                    print(f"Performing Deletion of this directory: {remotedir}")
+                except:
+                    print("Error while performing this action. Deletion unsuccessful")
+                else:
+                    print("Deletion Successful")
+            else:
+                print(f"Deletion unsuccessful: {x} does not exist!")
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -297,4 +314,5 @@ commands["cd"] = chDirRem
 commands["rename"] = renameRemote
 commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
+commands["rmd"] = deleteDir
 del commands["command_name"] # deletes example from command list
