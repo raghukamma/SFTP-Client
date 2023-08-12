@@ -81,6 +81,32 @@ def make_directory(sftp, args):
     except Exception as e:
         print(f"Error creating directory: {str(e)}")
 
+# below function allows users to change permissions on a file or directory on remote server
+def change_permission(sftp, args):
+    if sftp == None:
+        print("\nWarning: SFTP client is not connected")
+        return
+    
+    if len(args) < 3:     #show error message if no argument is passed
+        print("Error: Invalid argument. Please enter the file or directory name and the permission to be set. For example: chmod 777 filename, chmod 741 directoryname")
+        return
+    
+    if len(args) > 3:   #show error message if more than two arguments are passed
+        print("Error: Invalid argument. Please enter only two arguments.  For example: chmod 777 filename, chmod 741 directoryname")
+        return
+    
+    remotepath = args[2]    #get the file or directory name from the argument
+    newmode = args[1]   #get the permission to be set from the argument
+    try:
+        if sftp.exists(remotepath): #check if the file or directory exists
+            sftp.chmod(remotepath, mode=newmode)
+            print(f"Permission changed successfully for '{remotepath}'")
+        else:
+            print(f"Error: There is no file or directory with the name '{remotepath}' Please use correct name")
+            return
+    except Exception as e:
+        print(f"Error changing permission: {str(e)}")
+
 # Saiteja G 7/19/2023
 # Function to close SFTP connection
 def logout(sftp):
@@ -322,6 +348,7 @@ commands["command_name"] = command_function_name
 commands["help"] = help
 commands["ls"] = list_content
 commands["get_file"] = get_file_remote_server
+commands["chmod"] = change_permission
 commands["closeconn"] = tologOut
 commands["rm"] = delFileRemote
 commands["mget"] = getMultiple
