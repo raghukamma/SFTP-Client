@@ -180,7 +180,23 @@ def getMultiple(sftp, args):
                 print("Download failed. Please try again!")
         else:
             print(f"Filename you entered does not exist.\n Please try again!") 
-            
+#Varsha
+#Changing directory on the local machine
+def change_directory_local(sftp, args):
+    curDir = os.getcwd()
+    print("Your current working directory is : "+os.getcwd())
+    print("Enter the name of directory or path to change the current working directory on local machine: ")
+    userPath = input()
+    try:
+        os.chdir(userPath)
+        if(os.getcwd() == curDir+"\\"+userPath or os.getcwd() == userPath or userPath == '..'):
+            print("Your current working directory changed successfully")
+            print("Your current working directory is : "+os.getcwd())
+        else:
+            print("Error while changing the directory.\n Please try again!")
+    except Exception as e:
+        print("Error while changing the directory.\n Please try again!")
+    
 
 # Saiteja G 7/30/2023
 # Function to copy directory on remote server
@@ -314,5 +330,6 @@ commands["cd"] = chDirRem
 commands["rename"] = renameRemote
 commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
+commands["cdl"] = change_directory_local
 commands["rmd"] = deleteDir
 del commands["command_name"] # deletes example from command list
