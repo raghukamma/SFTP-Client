@@ -234,6 +234,55 @@ def list_files_folder_local(sftp, args=None):
     except OSError as e:
         print(f"Error: {e}")
 
+
+def chDirRem(sftp, args):
+    if(len(args) > 2):
+        print("Please only enter one directory at a time. ex: cd remoteDirectory")
+        return
+    if(len(args) < 2):
+        print("Please enter the directory to change into. ex: cd remoteDirectory")
+        return
+    if(sftp.exists(args[1])):
+        sftp.chdir(args[1])
+        print("-> " + sftp.pwd)
+    else:
+        print("That directory does not exist")
+
+def renameRemote(sftp, args):
+    print("Please enter the file or directory to be renamed:")
+    src = input()
+    if sftp.exists(src):
+        print("Please enter the new name:")
+        dest = input()
+        try:
+            sftp.rename(src, dest)
+        except IOError:
+            print("Oops, you entered an invalid file name")
+            return
+        else:
+            print(src + " successfully renamed " + dest)
+            return
+    else:
+        print("The file you entered does not exist.")
+        
+#Varsha
+def rename_file_on_local(sftp, args=None):
+     print("Enter the name of the file along with it's extension to be renamed on the local machine")
+     filerenamel= input()
+     if os.path.isfile(filerenamel) and os.path.exists(filerenamel):
+        print("Enter the new name along with it's extension for the file")
+        newnamel = input()
+        if os.path.isfile(newnamel) and os.path.exists(newnamel):
+            print("the name you entered already exists")
+        else:
+            os.rename(filerenamel, newnamel)
+            if os.path.isfile(newnamel) and os.path.exists(newnamel):
+                print("The file has been renamed successfully") 
+            else:
+                print("The file could not be renamed. Please try again")
+     else:
+        print("The file you wish to rename does not exist. Please enter a valid filename")
+
 def delFileRemote(sftp, args):
     #print("Please enter the name of the file you wish to delete")
     for x in args:
@@ -248,6 +297,24 @@ def delFileRemote(sftp, args):
             else:
                 print( x + " deleted successfully!")
 
+
+# Saiteja G 8/8/2023
+# Function to delete directory on remote server
+def deleteDir(sftp, args):
+    for x in args:
+        if x != "rmd":
+            remotedir = x
+            if sftp.exists(remotedir):
+                try:
+                    sftp.execute(f"rm -r {remotedir}")
+                    print(f"Performing Deletion of this directory: {remotedir}")
+                except:
+                    print("Error while performing this action. Deletion unsuccessful")
+                else:
+                    print("Deletion Successful")
+            else:
+                print(f"Deletion unsuccessful: {x} does not exist!")
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
@@ -259,6 +326,10 @@ commands["rm"] = delFileRemote
 commands["mget"] = getMultiple
 commands["mkdir"] = make_directory
 commands["lsl"] = list_files_folder_local
+commands["cd"] = chDirRem
+commands["rename"] = renameRemote
+commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
 commands["cdl"] = change_directory_local
+commands["rmd"] = deleteDir
 del commands["command_name"] # deletes example from command list
