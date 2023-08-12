@@ -5,7 +5,11 @@ this file should contain functions that the shell executes through the command d
 
 import os
 import warnings
+import loggerclass
 warnings.filterwarnings('ignore','.*Failed to load HostKeys.*')
+
+#logging.basicConfig(format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
+#logging.basicConfig(format='%(asctime)s %(message)s', filename="logging_info.log", encoding='utf-8', level=logging.DEBUG)
 
 commands = dict()
 
@@ -205,18 +209,23 @@ def copyDir(sftp, args):
 
 def list_files_folder_local(sftp, args=None):
     path = "."
+    log = loggerclass.getLogger('list_files_folder_local')
     try:
         print("Displaying the files and folders from current directory present in the local machine: ")
+        log.info("Displaying the files and folders from current directory present in the local machine: ")
         entries = os.listdir(path)
         for entry in entries:
             entry_path = os.path.join(path, entry)
             if os.path.isdir(entry_path):
                 print(entry)
+                log.info(entry)
             else:
                 print(entry)
+                log.info(entry)
 
     except OSError as e:
         print(f"Error: {e}")
+        log.error(f"Error: {e}")
 
 #Varsha
 def rename_file_on_local(sftp, args=None):
@@ -230,7 +239,7 @@ def rename_file_on_local(sftp, args=None):
         else:
             os.rename(filerenamel, newnamel)
             if os.path.isfile(newnamel) and os.path.exists(newnamel):
-                print("The file has been renamed successfully") 
+                print("The file has been renamed successfully")
             else:
                 print("The file could not be renamed. Please try again")
      else:
