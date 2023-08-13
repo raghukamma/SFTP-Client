@@ -32,8 +32,10 @@ def command_function_name(sftp, args):
 # below function lists all directories and files in the pwd on the server
 # it supports simple "ls" or "ls -l" to show file attributes
 def list_content(sftp, args):
+    log = loggerclass.getLogger('list_content')
     if sftp == None:
         print("\nWarning: SFTP client is not connected")
+        log.warn("\nWarning: SFTP client is not connected ")
         return
     
     path = '.' # set the default path to pwd
@@ -44,6 +46,7 @@ def list_content(sftp, args):
 
     if len(args) > 1 and args[1] != '-l':
         print("Error: Invalid argument. Currently ls command only supports -l argument. Please enter 'ls -l' to show file attributes")
+        log.error("Error: Invalid argument. Currently ls command only supports -l argument. Please enter 'ls -l' to show file attributes")
         return
 
     try:
@@ -52,25 +55,32 @@ def list_content(sftp, args):
             if show_attributes:
                 attributes = entry.longname.split()
                 print(' '.join(attributes))
+                log.info(' '.join(attributes))
             else:
                 print(entry.filename)
+                log.info(entry.filename)
     except Exception as e:
         print(f"Error listing directory or files: {str(e)}")
+        log.error(f"Error listing directory or files: {str(e)}")
 
 #below function creates directory on remote server using mkdir command
 def make_directory(sftp, args):
+    log = loggerclass.getLogger('make_directory')
     if sftp == None:
         print("\nWarning: SFTP client is not connected")
+        log.warn("\nWarning: SFTP client is not connected")
         return
     
     #show error message if no argument is passed
     if len(args) < 2:
         print("Error: Invalid argument. Please enter the directory name to be created. For example: mkdir new_directory")
+        log.error("Error: Invalid argument. Please enter the directory name to be created. For example: mkdir new_directory")
         return
     
     #show error message if more than one argument is passed
     if len(args) > 2:
         print("Error: Invalid argument. Please enter only one argument. For example: mkdir new_directory")
+        log.error("Error: Invalid argument. Please enter only one argument. For example: mkdir new_directory")
         return
     
     directory_name = args[1] #get the directory name from the argument
@@ -78,48 +88,63 @@ def make_directory(sftp, args):
         #check if the directory already exists
         if sftp.isdir(directory_name):
             print(f"Error: There is an existing directory with the name '{directory_name}' Please use another name for creating a new directory")
+            log.error(f"Error: There is an existing directory with the name '{directory_name}' Please use another name for creating a new directory")
             return
         else:
             sftp.mkdir(directory_name)
             print(f"Directory {directory_name} created successfully")
+            log.info(f"Directory {directory_name} created successfully")
     except Exception as e:
         print(f"Error creating directory: {str(e)}")
+        log.error(f"Error creating directory: {str(e)}")
 
 # Saiteja G 7/19/2023
 # Function to close SFTP connection
 def logout(sftp):
+    log = loggerclass.getLogger('logout')
+
     try:
         if sftp:
             sftp.close()
             sftp = None
             print("SFTP connection closed successfully.")
+            log.info("SFTP connection closed successfully.")
     except Exception as e:
         print(f"Error closing SFTP connection: {e}")
+        log.error(f"Error closing SFTP connection: {e}")
         
 
 # Saiteja G 7/19/2023
 # Function to handle logout command
 # command to be used is "logout"
 def tologOut(sftp, args):
+    log = loggerclass.getLogger('tologOut')
     print("Are you sure to close the connection? (yes/no)")
+    log.info("Are you sure to close the connection? (yes/no)")
     value = input().strip().lower()
     try:
         if value == "yes":
+            log.info("User entered yes. Closing the connection..")
             logout(sftp) #connection closes using above logout function.
             exit()
         elif value == "no":
             print("closing the connection not successful as user selected 'No'.")
+            log.info("closing the connection not successful as user selected 'No'.")
+
         else:
             print("Please give input as 'yes' or 'no'.")
+            log.info("Please give input as 'yes' or 'no'.")
             tologOut(sftp, args)
     except Exception as e:
         print(f"Error closing SFTP connection: {e}")
+        log.error(f"Error closing SFTP connection: {e}")
 
     
 # prints all commands
 def help(sftp, args=None):
     # this does not print the command names aligned, only as a list separated 
     # by two spaces
+    log = loggerclass.getLogger('helper_func')
     termw = os.get_terminal_size().columns
     currw = 0
     key_list = list(commands.keys())
@@ -133,27 +158,36 @@ def help(sftp, args=None):
             print(key, end='  ')
             currw = currw + len(key) + 2
     print('\n')
+    log.info("Printed the options on console..")
 
 #Varsha
 #downloads file from remote server 
 def get_file_remote_server(sftp, args=None):
+    log = loggerclass.getLogger('get_file_remote_server')
     print("Enter the filname with the extension of the file from the current directory")
     filename = input()
+    log.info("Enter the filname with the extension of the file from the current directory: "+filename)
     if sftp.isfile(filename):
         print(f"Downloading file:{filename} from current directory")
+        log.info(f"Downloading file:{filename} from current directory")
         if getfile(sftp, filename):
             print(f"{filename} downloaded successfully")
+            log.info(f"{filename} downloaded successfully")
         else:
             print("Downloading failed. \nRetrying to download the file again....")
+            log.error("Downloading failed. \nRetrying to download the file again....")
             if getfile(filename):
                 print("Downloaded successfully")
+                log.info("Downloaded successfully")
             else:
                 print("Download failed again.\n Please try again after some time")
+                log.error("Download failed again.\n Please try again after some time")
     else:
         print(f"Filename you entered does not exist.\n Please try again")
+        log.error(f"Filename you entered does not exist.\n Please try again")
 
 
-def getfile(sftp, filename):    
+def getfile(sftp, filename):  
     try:
         sftp.get(filename, preserve_mtime=True)
     except IOError as e:
@@ -168,43 +202,58 @@ def getfile(sftp, filename):
 # Saiteja G 7/24/2023
 # Function to be used to download multiple files   
 def getMultiple(sftp, args):
+    log = loggerclass.getLogger('getMultiple')
     if sftp == None:
         print("\nWarning: SFTP client is not connected")
+        log.warn("\nWarning: SFTP client is not connected")
         return
    
     print("Enter the file names from current directory with space inbetween. (Ex: test.txt test2.txt)")
     files = input()   # User Input
     multiple = files.split() # Multiple check
+    log.info("Enter the file names from current directory with space inbetween. (Ex: test.txt test2.txt): "+files)
     for i in multiple:
         if sftp.isfile(i) and sftp.exists(i):
             print(f"Selected file:{i}")
+            log.info(f"Selected file:{i}")
             if getfile(sftp,i):
                 print("Downloading....\n Successfully Downloaded.")
+                log.info("Downloading....\n Successfully Downloaded.")
             else:
                 print("Download failed. Please try again!")
+                log.info("Download failed. Please try again!")
         else:
             print(f"Filename you entered does not exist.\n Please try again!") 
+            log.error(f"Filename you entered does not exist.\n Please try again!")
             
 
 # Saiteja G 7/30/2023
 # Function to copy directory on remote server
 def copyDir(sftp, args):
+    log = loggerclass.getLogger('copyDir')
     print('Enter the directory name that needs to be copied:')
     dirname = input() # Directory that needs to be copied
+    log.info('Enter the directory name that needs to be copied: '+dirname)
     if sftp.isdir(dirname):
         print("Enter the destination(Directory name):")
+        log.info("Enter the destination(Directory name):")
         dirdestination = input() # Destination of the directory that being copied to
         try:
             command = f'cp -r {dirname} {dirdestination}' # command for the copy
             result = sftp.execute(command) # Command execution
             if not result:
                 print(f"Copying {dirname} to {dirdestination}.")
+                log.info(f"Copying {dirname} to {dirdestination}.")
             else:
                 print("Error copying the directory")
+                log.error("Error copying the directory")
         except Exception as e: # Error handling
             print("Error performing this action.\n Please try again!")
+            log.error("Error performing this action.\n Please try again!")
+
     else:
         print("This directory doesnot exist!")
+        log.error("This directory doesnot exist!")
         
 
 def list_files_folder_local(sftp, args=None):
@@ -229,24 +278,32 @@ def list_files_folder_local(sftp, args=None):
 
 #Varsha
 def rename_file_on_local(sftp, args=None):
+     log = loggerclass.getLogger('rename_file_on_local')
      print("Enter the name of the file along with it's extension to be renamed on the local machine")
      filerenamel= input()
+     log.info("Enter the name of the file along with it's extension to be renamed on the local machine: "+filerenamel)
      if os.path.isfile(filerenamel) and os.path.exists(filerenamel):
         print("Enter the new name along with it's extension for the file")
+        log.info("Enter the new name along with it's extension for the file")
         newnamel = input()
         if os.path.isfile(newnamel) and os.path.exists(newnamel):
             print("the name you entered already exists")
+            log.error("the name you entered already exists")
         else:
             os.rename(filerenamel, newnamel)
             if os.path.isfile(newnamel) and os.path.exists(newnamel):
                 print("The file has been renamed successfully")
+                log.info("The file has been renamed successfully")
             else:
                 print("The file could not be renamed. Please try again")
+                log.error("The file could not be renamed. Please try again")
      else:
         print("The file you wish to rename does not exist. Please enter a valid filename")
+        log.error("The file you wish to rename does not exist. Please enter a valid filename")
 
 
 def delFileRemote(sftp, args):
+    log = loggerclass.getLogger('delFileRemote')
     #print("Please enter the name of the file you wish to delete")
     for x in args:
         if x != "rm":
@@ -255,10 +312,13 @@ def delFileRemote(sftp, args):
                 sftp.remove(remotefile)
             except IOError:
                 print("Deletion unsuccessful: " + x + " does not exist")
+                log.error("Deletion unsuccessful: " + x + " does not exist")
             except: 
                 print("Deletion unsuccessful")
+                log.error("Deletion unsuccessful")
             else:
                 print( x + " deleted successfully!")
+                log.info(x + " deleted successfully!")
 
 
 # to register a new command with the Command Decoder copy the form below:
