@@ -30,4 +30,16 @@ def test_rename_remote():
     assert valfoo.exists('success.txt') == True
 
 
+def test_change_dir_rem():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username='', password='', cnopts=cnopts)
+    #create remote file
+    valfoo.mkdir('testdir')
+    #call rename remote
+    x = ["cd", "testdir"]
+    sftpshellfuncs.commands["cd"](valfoo, x)
+    assert "testdir" in valfoo.pwd
+
 
