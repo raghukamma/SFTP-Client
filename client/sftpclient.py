@@ -3,7 +3,7 @@ Tazwell B. 7/14/2023
 This file contains the client menus before connected to a server
 '''
 
-import sftpshell, os
+import sftpshell
 import getpass
 from termcolor import colored
 

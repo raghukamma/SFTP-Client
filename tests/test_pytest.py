@@ -1,6 +1,6 @@
-import sftpclient
+import client.sftpclient as sftpclient
 import pysftp
-import sftpshellfuncs
+import client.sftpshellfuncs as sftpshellfuncs
 #pytest unit testing file 
 #add your unit tests below
 
