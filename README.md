@@ -42,7 +42,7 @@ pip install termcolor
 
 ## How to run the project:
 
-From root directory: `SFTP-CLIENT/`, use command: python main.py
+From root directory: `SFTP-Client/`, use command: python main.py
 
 
 
