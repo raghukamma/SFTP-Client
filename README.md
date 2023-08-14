@@ -23,7 +23,7 @@ rmd        delete directory on remote server
 
 ## Installing python packages:
 
-Install pysftp.
+Install pysftp
 
 ```shell
 pip install pysftp
