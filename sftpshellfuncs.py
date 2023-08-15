@@ -186,6 +186,26 @@ def help(sftp, args=None):
     print('\n')
     log.info("Printed the options on console..")
 
+# Tazwell
+# puts file from local cwd to remote server
+def put_file(sftp, args=None):
+    if sftp is None:
+        print("\nWarning: SFTP client is not connected")
+        #LOG HERE
+        return
+    if args is None or len(args) < 2:
+        print("put requires at least one file to put")
+        #LOG HERE
+        return
+    for i in range(1,len(args)):
+        if os.path.isfile(os.getcwd()+'/'+args[i]):
+            try:
+                sftp.put(os.getcwd()+'/'+args[i])
+                print(f"Uploaded file: {args[i]}")
+            except IOError as e:
+                print(f"File: {os.getcwd()+'/'+args[i]} failed to upload")
+    return
+
 #Varsha
 #downloads file from remote server 
 def get_file_remote_server(sftp, args=None):
@@ -436,4 +456,5 @@ commands["renamel"] = rename_file_on_local
 commands["copydir"] = copyDir
 commands["cdl"] = change_directory_local
 commands["rmd"] = deleteDir
+commands["put"] = put_file
 del commands["command_name"] # deletes example from command list
