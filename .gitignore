@@ -1,0 +1,3 @@
+# exclude saved logins so we don't upload passwords to github
+saved_cons.json
+*.log

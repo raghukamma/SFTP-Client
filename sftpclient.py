@@ -5,6 +5,7 @@ This file contains the client menus before connected to a server
 
 import sftpshell
 import getpass
+import json
 from termcolor import colored
 
 class SFTPClient:
@@ -19,6 +20,27 @@ class SFTPClient:
         self.state = 0
         self.is_running = True
         self.shell = sftpshell.SFTPShell()
+        self.saved_logins = dict()
+        with open("saved_cons.json", "a"): # create file if it doesn't exist
+            pass
+        with open("saved_cons.json") as cons:
+            read = cons.read()
+            try:
+                self.saved_logins = json.loads(read)
+            except json.JSONDecodeError as e:
+                if len(read) > 1:
+                    print("saved connections file may be improperly formatted")
+                # log decode error here
+                pass
+
+    def save_login(self, host, user, passw):
+        self.saved_logins[host] = {user: passw}
+        with open("saved_cons.json", "w") as cons:
+            try:
+                cons.write(json.dumps(self.saved_logins))
+            except Exception as e:
+                print("Something went wrong saving connection")
+
 
     def welcome(self):
         print(colored("\nWelcome to Group 2's SFTP Client!", 'green', attrs=['bold', 'blink']))
@@ -28,7 +50,7 @@ class SFTPClient:
     def main(self):
         print("\nWhat would you like to do?:")
         print("(c)onnect to a new server")
-        print("(s)ave a new connection")
+        print("(s)aved connections")
         print("(e)xit")
         print("\n ", end='')
         user_input = input().lower()
@@ -45,8 +67,14 @@ class SFTPClient:
         user = input("Enter your username: ")
         passw = getpass.getpass(stream=None)
 
-        # ISSUE #17: check if saved, ask if want to save etc...
-
+        user_input = str()
+        if host not in self.saved_logins.keys() or user not in self.saved_logins[host].keys():
+            while user_input.lower() != 'y' and user_input.lower() != 'n':
+                print("Would you like to save this login? y/n: ", end='')
+                user_input = input()
+            if user_input.lower() == 'y':
+                self.save_login(host, user, passw)
+            
         self.shell.login(host, user, passw)
         self.shell.start()
         self.state = self.s_main
