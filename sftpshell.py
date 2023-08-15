@@ -5,6 +5,8 @@ This file contains the Main Shell Loop, Command Decoder, and the Login and Exit 
 
 import pysftp
 import sftpshellfuncs
+from tabulate import tabulate
+from termcolor import colored
 
 class SFTPShell:
     # SFTPShell Constructor
@@ -20,7 +22,7 @@ class SFTPShell:
     def __del__(self):
         if self.sftp != None:
             self.sftp.close()
-            print("\nConnection Closed")
+            print(colored("\nConnection Closed", 'red', attrs=['bold']))
 
     # Can't be defined in sftpshellfuncs.py
     def exit(self, sftp, args):
@@ -28,13 +30,15 @@ class SFTPShell:
         if self.sftp != None:
             self.sftp.close()
             self.sftp = None
-            print("\nConnection Closed")
+            print(colored("\nSuccessfully Logged out!", 'green', attrs=['bold']))
 
     # MUST BE CALLED BEFORE start()
     def login(self, host, user, passw):
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
+        self.sftp.timeout = 10
+        
 
     # decodes the user command
     def decode_command(self, user_input):
@@ -57,7 +61,7 @@ class SFTPShell:
     # gets user input and passes it to decoder
     def main_loop(self):
         while self.is_running:
-            print(">", end='')
+            print("> ", end='')
             user_input = input()
             self.decode_command(user_input)
 
@@ -68,7 +72,19 @@ class SFTPShell:
             print("\nWarning: SFTP client is not connected")
 
         self.command_dict["logoff"] = self.exit
+        print("---------------------------------")
+        print(colored("\nLogin Successful!\n", 'green', attrs=['bold', 'blink']))
+        print("---------------------------------")
         print("\nType 'help' to view a full list of commands\n")
+        # List of commands in a tabular format
+        print(tabulate([['ls', 'list directories and files on remote server'], ['get_file', 'get file from remote server'],
+                        ['chmod', 'change permissions on remote server'], ['closeconn','close connection'],
+                        ['logoff','logout from remote server'],['rm','delete file from remote server'],
+                        ['mget','get multiple'],['mkdir','create directory on remote server'],
+                        ['lsl','list of directories and files on local machine'],['cd','change directory on remote server'],
+                        ['rename','rename file on remote server'],['renamel','rename file on local machine'],
+                        ['copydir','copy directories on remote server'],['cdl','change directory on local machine'],
+                        ['rmd','delete directory on remote server']], headers=['Command', 'Description']))
         self.main_loop()
             
 

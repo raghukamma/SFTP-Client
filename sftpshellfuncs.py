@@ -253,7 +253,6 @@ def getMultiple(sftp, args):
 
             log.error(f"Filename you entered does not exist.\n Please try again!")
             
-=======
 #Varsha
 #Changing directory on the local machine
 def change_directory_local(sftp, args):
@@ -417,7 +416,7 @@ def deleteDir(sftp, args):
                     print("Deletion Successful")
             else:
                 print(f"Deletion unsuccessful: {x} does not exist!")
-
+                
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
