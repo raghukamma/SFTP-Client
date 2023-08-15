@@ -18,6 +18,7 @@ renamel    rename file on local machine
 copydir    copy directories on remote server
 cdl        change directory on local machine
 rmd        delete directory on remote server
+put        put file/files onto remote server
 
 ```
 
