@@ -5,6 +5,7 @@ This file contains the client menus before connected to a server
 
 import sftpshell
 import getpass
+from termcolor import colored
 
 class SFTPClient:
     # Enumerated Menu States
@@ -20,7 +21,8 @@ class SFTPClient:
         self.shell = sftpshell.SFTPShell()
 
     def welcome(self):
-        print("\nWelcome to Group 2's SFTP Client!")
+        print(colored("\nWelcome to Group 2's SFTP Client!", 'green', attrs=['bold', 'blink']))
+        print("---------------------------------")
         self.state = self.s_main
 
     def main(self):
@@ -30,13 +32,13 @@ class SFTPClient:
         print("(e)xit")
         print("\n ", end='')
         user_input = input().lower()
-
         if user_input == 'c':
             self.state = self.s_connect
         elif user_input == 's':
             self.state = self.s_saved
         elif user_input == 'e':
             self.state = self.s_exit
+            print(colored("\nConnection Closed", 'red', attrs=['bold']))
 
     def connect(self):
         host = input("Enter the name of the host to connect to: ")

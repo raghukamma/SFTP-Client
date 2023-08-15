@@ -342,7 +342,7 @@ def deleteDir(sftp, args):
                     print("Deletion Successful")
             else:
                 print(f"Deletion unsuccessful: {x} does not exist!")
-
+                
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
