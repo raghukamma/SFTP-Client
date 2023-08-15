@@ -5,6 +5,7 @@ This file contains the Main Shell Loop, Command Decoder, and the Login and Exit 
 
 import pysftp
 import sftpshellfuncs
+import paramiko
 
 class SFTPShell:
     # SFTPShell Constructor
@@ -35,6 +36,8 @@ class SFTPShell:
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
+        self.sftp.timeout = 10
+        
 
     # decodes the user command
     def decode_command(self, user_input):
