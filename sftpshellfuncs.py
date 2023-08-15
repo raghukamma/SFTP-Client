@@ -308,6 +308,7 @@ def list_files_folder_local(sftp, args=None):
         print("Displaying the files and folders from current directory present in the local machine: ")
         log.info("Displaying the files and folders from current directory present in the local machine: ")
         entries = os.listdir(path)
+        entries.sort(key=os.path.getctime)
         for entry in entries:
             entry_path = os.path.join(path, entry)
             if os.path.isdir(entry_path):
