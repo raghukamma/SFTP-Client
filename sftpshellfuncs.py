@@ -8,8 +8,6 @@ import warnings
 import loggerclass
 warnings.filterwarnings('ignore','.*Failed to load HostKeys.*')
 
-#logging.basicConfig(format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
-#logging.basicConfig(format='%(asctime)s %(message)s', filename="logging_info.log", encoding='utf-8', level=logging.DEBUG)
 
 commands = dict()
 
@@ -429,15 +427,15 @@ def deleteDir(sftp, args):
             remotedir = x
             if sftp.exists(remotedir):
                 try:
-                    sftp.execute(f"rm -r {remotedir}")
+                    sftp.rmdir(remotedir)
                     print(f"Performing Deletion of this directory: {remotedir}")
                 except:
                     print("Error while performing this action. Deletion unsuccessful")
                 else:
                     print("Deletion Successful")
             else:
-                print(f"Deletion unsuccessful: {x} does not exist!")
-                
+                print(f"Deletion unsuccessful: {x} does not exist!")    
+
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:
