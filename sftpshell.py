@@ -36,8 +36,12 @@ class SFTPShell:
     def login(self, host, user, passw):
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
-        self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
-        self.sftp.timeout = 10
+        try:
+            self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
+        except Exception as e:
+            print("Error: could not connect to server")
+        else:
+            self.sftp.timeout = 10
         
 
     # decodes the user command

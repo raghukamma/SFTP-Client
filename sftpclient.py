@@ -38,7 +38,10 @@ class SFTPClient:
                 pass
 
     def save_login(self, host, user, passw):
-        self.saved_logins[host] = {user: passw}
+        if host not in self.saved_logins.keys():
+            self.saved_logins[host] = {user: passw}
+        else:
+            self.saved_logins[host][user] = passw
         with open("saved_cons.json", "w") as cons:
             try:
                 cons.write(json.dumps(self.saved_logins))
