@@ -108,7 +108,7 @@ def test_copy_dir_rem(monkeypatch):
     assert "dir1" not in valfoo.pwd
     assert "dir2" not in valfoo.pwd
 
-# logout from server 
+# logout from remote server 
 def test_logout_rem(monkeypatch):
     #setting the connection
     cnopts = pysftp.CnOpts()
@@ -119,7 +119,36 @@ def test_logout_rem(monkeypatch):
     with patch("builtins.input", side_effect=["logoff"]): # using the inbuilt logoff command
         shell.start() #starting the session to perform logout
         
-        
+# Get multiple from remote server   
+def test_get_multiple_rem(monkeypatch):
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+    valfoo.put('test.txt') #put test.txt to the root
+    # Change the file name to success.txt
+    rename1 = ["rename", "test.txt", "success1.txt"]
+    sftpshellfuncs.commands["rename"](valfoo, rename1)
+    assert valfoo.exists('success1.txt') == True # Validate name change to success.txt
+    valfoo.put('test.txt') #put test.txt again to the root
+    rename2 = ["rename", "test.txt", "success2.txt"]
+    sftpshellfuncs.commands["rename"](valfoo, rename2)
+    assert valfoo.exists('success2.txt') == True # Validate name change to success.txt
+    user_inputs = 'success1.txt success2.txt' # list of inputs for the command
+    def mock_input():
+        return user_inputs #input val from above list
+    args = None
+    monkeypatch.setattr('builtins.input', mock_input)
+    sftpshellfuncs.commands["mget"](valfoo, args) #call copy directory
+    monkeypatch.undo()
+    #call remove dir remote
+    y = ["rmd", "success1.txt"]
+    sftpshellfuncs.commands["rmd"](valfoo, y) #Remove dir1
+    z = ["rmd", "success2.txt"]
+    sftpshellfuncs.commands["rmd"](valfoo, z) #Remove dir2
+    assert "success1.txt" not in valfoo.pwd
+    assert "success2.txt" not in valfoo.pwd
+
 #using monkeypatch to mock the user input
 #using capsys to capture the output printed
 
