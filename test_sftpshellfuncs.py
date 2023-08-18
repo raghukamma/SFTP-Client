@@ -279,3 +279,71 @@ def test_list_files_folder_local_failure():
         captured_output = [call_args[0] for call_args, _ in mock_print.call_args_list]
         print(captured_output)
         assert captured_output != expected, "Output does not match the expected output"
+
+# testing ls in remote server
+def test_list_content_default():
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username=usern, password=passwd, cnopts=cnopts)
+    #call mkdir remote
+    x = ["mkdir", "test_list_content_default"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x)
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('test_list_content_default') == True
+    #Clean up
+    z = ["rmd" , "test_list_content_default"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test_list_content_default" not in valfoo.pwd
+
+#testing chmod on remote server
+def test_change_mode_remote(capsys):
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+
+    #call mkdir remote
+    x = ["mkdir", "testdir_chmod"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x) 
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('testdir_chmod') == True
+
+    #group and everyone else does not have any permissions to read, write or execute the directory testdir_chmod by default when created
+    #call chmod to change the permissions to 777 for example
+    x = ["chmod", "777", "testdir_chmod"]
+    sftpshellfuncs.commands["chmod"](valfoo, x)
+
+    # Capture and split the printed output
+    captured = capsys.readouterr()
+    output_lines = captured.out.strip().split('\n')
+
+    # check for success message in the output
+    assert "Permission changed successfully for 'testdir_chmod'" in output_lines
+
+    # Clean up
+    z = ["rmd", "testdir_chmod"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test.txt" not in valfoo.pwd
+
+
+# testing mkdir in remote server
+def test_make_directory_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+    #call mkdir remote
+    x = ["mkdir", "test_mkdir"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x)
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('test_mkdir') == True
+    #Clean up
+    z = ["rmd" , "test_mkdir"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test_mkdir" not in valfoo.pwd
