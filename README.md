@@ -41,9 +41,13 @@ Install termcolor
 pip install termcolor
 ```
 
-## How to run the project:
+## How to run SFTP client:
 
 From root directory: `SFTP-Client/`, use command: python main.py
 
 
+## How to run the unit tests:
 
+1. Add your credentials - replace `<username> and <password>` in `data.json` file with your credentials.
+
+2. From root directory: `SFTP-Client/`, use command: pytest test_sftpshellfuncs.py
