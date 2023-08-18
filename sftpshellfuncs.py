@@ -8,8 +8,6 @@ import warnings
 import loggerclass
 warnings.filterwarnings('ignore','.*Failed to load HostKeys.*')
 
-#logging.basicConfig(format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
-#logging.basicConfig(format='%(asctime)s %(message)s', filename="logging_info.log", encoding='utf-8', level=logging.DEBUG)
 
 commands = dict()
 
@@ -456,7 +454,7 @@ def deleteDir(sftp, args):
             remotedir = x
             if sftp.exists(remotedir):
                 try:
-                    sftp.execute(f"rm -r {remotedir}")
+                    sftp.rmdir(remotedir)
                     print(f"Performing Deletion of this directory: {remotedir}")
                     log.info(f"Performing Deletion of this directory: {remotedir}")
                 except:
