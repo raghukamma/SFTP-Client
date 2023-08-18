@@ -230,3 +230,20 @@ def test_list_files_folder_local_failure():
         captured_output = [call_args[0] for call_args, _ in mock_print.call_args_list]
         print(captured_output)
         assert captured_output != expected, "Output does not match the expected output"
+
+# testing ls in remote server
+def test_list_content_default():
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username=usern, password=passwd, cnopts=cnopts)
+    #call mkdir remote
+    x = ["mkdir", "test_list_content_default"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x)
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('test_list_content_default') == True
+    #Clean up
+    z = ["rmd" , "test_list_content_default"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test_list_content_default" not in valfoo.pwd
