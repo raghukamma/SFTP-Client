@@ -149,6 +149,55 @@ def test_get_multiple_rem(monkeypatch):
     assert "success1.txt" not in valfoo.pwd
     assert "success2.txt" not in valfoo.pwd
 
+# Get file from remote server   
+def test_get_file_remote(monkeypatch):
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+    valfoo.put('test.txt')
+    rename1 = ["rename", "test.txt", "test1.txt"]
+    sftpshellfuncs.commands["rename"](valfoo, rename1)
+    assert valfoo.exists('test1.txt') == True 
+    user_inputs = 'test1.txt' 
+    def mock_input():
+        return user_inputs 
+    args = None
+    monkeypatch.setattr('builtins.input', mock_input)
+    sftpshellfuncs.commands["get_file"](valfoo, args) 
+    monkeypatch.undo()
+    y = ["rmd", "test1.txt"]
+    sftpshellfuncs.commands["rmd"](valfoo, y)
+    assert "test1.txt" not in valfoo.pwd
+
+#rename file on local
+def test_rename_local_file(tmpdir, monkeypatch, capsys):
+    # Create a temporary directory for testing
+    test_dir = tmpdir.mkdir("test_directory")
+
+    # Create a temporary test file
+    old_filename = 'testrename.txt'
+    new_filename = 'new_test.txt'
+    old_file_path = os.path.join(str(test_dir), old_filename)
+    new_file_path = os.path.join(str(test_dir), new_filename)
+    with open(old_file_path, 'w') as f:
+        f.write('This is a test file.')
+
+    # Mock user input for the new filename
+    user_inputs = new_filename
+    def mock_input():
+        return user_inputs
+    monkeypatch.setattr('builtins.input', mock_input)
+
+    # Perform the renaming operation
+    os.rename(old_file_path, new_file_path)
+
+    # Assert that the file was renamed
+    assert os.path.exists(new_file_path)
+    assert not os.path.exists(old_file_path)
+
+    # Clean up: remove the test directory
+    test_dir.remove()
+
 #using monkeypatch to mock the user input
 #using capsys to capture the output printed
 
