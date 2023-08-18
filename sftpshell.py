@@ -82,7 +82,6 @@ class SFTPShell:
         self.is_running = True
         if self.sftp == None:
             print("\nWarning: SFTP client is not connected")
-            log.warn("\nWarning: SFTP client is not connected")
 
         self.command_dict["logoff"] = self.exit
         print("---------------------------------")

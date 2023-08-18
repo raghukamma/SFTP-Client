@@ -1,6 +1,6 @@
 ''' main.py
 Tazwell B. 7/14/2023
-m ain
+main
 '''
 
 import sftpclient
