@@ -7,7 +7,7 @@ from sftpshellfuncs import change_directory_local, list_files_folder_local
 #pytest unit testing file 
 #add your unit tests below
 
-# Retrieving the username and password from the json file data.json
+# Retrieving the username and password from the json file - data.json
 with open('data.json', 'r') as json_file:
         data = json.load(json_file)
 usern = data['username']
@@ -152,6 +152,7 @@ def test_get_multiple_rem(monkeypatch):
 #using monkeypatch to mock the user input
 #using capsys to capture the output printed
 
+# Change the directory in local
 def test_change_directory_local(tmpdir, monkeypatch, capsys):
     #using tmpdir to create a temporary directory for testing
     test_dir = tmpdir.mkdir("test_directory")
@@ -184,6 +185,7 @@ def test_change_directory_local_error(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Error while changing the directory.\n Please try again!" in captured.out
 
+# List of contents in local
 def test_list_files_folder_local_success():
     path = "."
     try:
