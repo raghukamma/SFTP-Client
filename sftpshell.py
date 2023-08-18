@@ -4,6 +4,7 @@ This file contains the Main Shell Loop, Command Decoder, and the Login and Exit 
 '''
 
 import pysftp
+import loggerclass
 import sftpshellfuncs
 from tabulate import tabulate
 from termcolor import colored
@@ -26,26 +27,31 @@ class SFTPShell:
 
     # Can't be defined in sftpshellfuncs.py
     def exit(self, sftp, args):
+        log = loggerclass.getLogger('exit')
         self.is_running = False
         if self.sftp != None:
             self.sftp.close()
             self.sftp = None
             print(colored("\nSuccessfully Logged out!", 'green', attrs=['bold']))
+            log.info("Successfully Logged out!")
 
     # MUST BE CALLED BEFORE start()
     def login(self, host, user, passw):
+        log = loggerclass.getLogger('login')
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         try:
             self.sftp = pysftp.Connection(host, user, password=passw, cnopts=cnopts)
         except Exception as e:
             print("Error: could not connect to server")
+            log.error("Error: could not connect to server")
         else:
             self.sftp.timeout = 10
         
 
     # decodes the user command
     def decode_command(self, user_input):
+        log = loggerclass.getLogger('decode_command')
         command = str.split(user_input, ' ')
 
         if type(command) != list:
@@ -59,6 +65,7 @@ class SFTPShell:
         c = command[0].lower()
         if c not in self.command_dict.keys():
             print("Command not recognized")
+            log.warn("Command not recognized. Command entered is: "+c)
             return
         self.command_dict[c](self.sftp, command)
 
@@ -71,13 +78,16 @@ class SFTPShell:
 
     # starts the SFTP shell, call after loging in
     def start(self):
+        log = loggerclass.getLogger('start')
         self.is_running = True
         if self.sftp == None:
             print("\nWarning: SFTP client is not connected")
+            log.warn("\nWarning: SFTP client is not connected")
 
         self.command_dict["logoff"] = self.exit
         print("---------------------------------")
         print(colored("\nLogin Successful!\n", 'green', attrs=['bold', 'blink']))
+        log.info("Login Successful!")
         print("---------------------------------")
         print("\nType 'help' to view a full list of commands\n")
         # List of commands in a tabular format
