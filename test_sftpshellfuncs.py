@@ -247,3 +247,37 @@ def test_list_content_default():
     z = ["rmd" , "test_list_content_default"]
     sftpshellfuncs.commands["rmd"](valfoo, z)
     assert "test_list_content_default" not in valfoo.pwd
+
+#testing chmod on remote server
+def test_change_mode_remote(capsys):
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+
+    #call mkdir remote
+    x = ["mkdir", "testdir_chmod"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x) 
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('testdir_chmod') == True
+
+    #group and everyone else does not have any permissions to read, write or execute the directory testdir_chmod by default when created
+    #call chmod to change the permissions to 777 for example
+    x = ["chmod", "777", "testdir_chmod"]
+    sftpshellfuncs.commands["chmod"](valfoo, x)
+
+    # Capture and split the printed output
+    captured = capsys.readouterr()
+    output_lines = captured.out.strip().split('\n')
+
+    # check for success message in the output
+    assert "Permission changed successfully for 'testdir_chmod'" in output_lines
+
+    # Clean up
+    z = ["rmd", "testdir_chmod"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test.txt" not in valfoo.pwd
+
+
