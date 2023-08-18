@@ -281,3 +281,20 @@ def test_change_mode_remote(capsys):
     assert "test.txt" not in valfoo.pwd
 
 
+# testing mkdir in remote server
+def test_make_directory_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    valfoo = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+    #call mkdir remote
+    x = ["mkdir", "test_mkdir"]
+    sftpshellfuncs.commands["mkdir"](valfoo, x)
+    #call ls to check if the directory is created
+    y = ["ls"]
+    sftpshellfuncs.commands["ls"](valfoo, y)
+    assert valfoo.exists('test_mkdir') == True
+    #Clean up
+    z = ["rmd" , "test_mkdir"]
+    sftpshellfuncs.commands["rmd"](valfoo, z)
+    assert "test_mkdir" not in valfoo.pwd
