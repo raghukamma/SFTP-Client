@@ -98,16 +98,20 @@ def make_directory(sftp, args):
 
 # below function allows users to change permissions on a file or directory on remote server
 def change_permission(sftp, args):
+    log = loggerclass.getLogger('change_permission')
     if sftp == None:
         print("\nWarning: SFTP client is not connected")
+        log.error("\nWarning: SFTP client is not connected")
         return
     
     if len(args) < 3:     #show error message if no argument is passed
         print("Error: Invalid argument. Please enter the file or directory name and the permission to be set. For example: chmod 777 filename, chmod 741 directoryname")
+        log.error("Error: Invalid argument. Please enter the file or directory name and the permission to be set. For example: chmod 777 filename, chmod 741 directoryname")
         return
     
     if len(args) > 3:   #show error message if more than two arguments are passed
         print("Error: Invalid argument. Please enter only two arguments.  For example: chmod 777 filename, chmod 741 directoryname")
+        log.error("Error: Invalid argument. Please enter only two arguments.  For example: chmod 777 filename, chmod 741 directoryname")
         return
     
     remotepath = args[2]    #get the file or directory name from the argument
@@ -116,11 +120,14 @@ def change_permission(sftp, args):
         if sftp.exists(remotepath): #check if the file or directory exists
             sftp.chmod(remotepath, mode=newmode)
             print(f"Permission changed successfully for '{remotepath}'")
+            log.info(f"Permission changed successfully for '{remotepath}'")
         else:
             print(f"Error: There is no file or directory with the name '{remotepath}' Please use correct name")
+            log.error(f"Error: There is no file or directory with the name '{remotepath}' Please use correct name")
             return
     except Exception as e:
         print(f"Error changing permission: {str(e)}")
+        log.error(f"Error changing permission: {str(e)}")
 
 # Saiteja G 7/19/2023
 # Function to close SFTP connection
@@ -168,7 +175,7 @@ def tologOut(sftp, args):
 def help(sftp, args=None):
     # this does not print the command names aligned, only as a list separated 
     # by two spaces
-    log = loggerclass.getLogger('helper_func')
+    log = loggerclass.getLogger('help')
     termw = os.get_terminal_size().columns
     currw = 0
     key_list = list(commands.keys())
@@ -187,21 +194,24 @@ def help(sftp, args=None):
 # Tazwell
 # puts file from local cwd to remote server
 def put_file(sftp, args=None):
+    log = loggerclass.getLogger('put_file')
     if sftp is None:
         print("\nWarning: SFTP client is not connected")
-        #LOG HERE
+        log.warn("Warning: SFTP client is not connected")
         return
     if args is None or len(args) < 2:
         print("put requires at least one file to put")
-        #LOG HERE
+        log.warn("put requires at least one file to put")
         return
     for i in range(1,len(args)):
         if os.path.isfile(os.getcwd()+'/'+args[i]):
             try:
                 sftp.put(os.getcwd()+'/'+args[i])
                 print(f"Uploaded file: {args[i]}")
+                log.info(f"Uploaded file: {args[i]}")
             except IOError as e:
                 print(f"File: {os.getcwd()+'/'+args[i]} failed to upload")
+                log.error(f"File: {os.getcwd()+'/'+args[i]} failed to upload")
     return
 
 #Varsha
@@ -274,19 +284,26 @@ def getMultiple(sftp, args):
 #Varsha
 #Changing directory on the local machine
 def change_directory_local(sftp, args):
+    log = loggerclass.getLogger('change_directory_local')
     curDir = os.getcwd()
     print("Your current working directory is : "+os.getcwd())
+    log.info("Your current working directory is : "+os.getcwd())
     print("Enter the name of directory or path to change the current working directory on local machine: ")
     userPath = input()
+    log.info("Enter the name of directory or path to change the current working directory on local machine: " +userPath)
     try:
         os.chdir(userPath)
         if(os.getcwd() == curDir+"\\"+userPath or os.getcwd() == userPath or userPath == '..'):
             print("Your current working directory changed successfully")
+            log.info("Your current working directory changed successfully")
             print("Your current working directory is : "+os.getcwd())
+            log.info("Your current working directory is : "+os.getcwd())
         else:
             print("Error while changing the directory.\n Please try again!")
+            log.error("Error while changing the directory.\n Please try again!")
     except Exception as e:
         print("Error while changing the directory.\n Please try again!")
+        log.error("Error while changing the directory.\n Please try again!")
     
 
 
@@ -341,22 +358,28 @@ def list_files_folder_local(sftp, args=None):
         log.error(f"Error: {e}")
 
 def chDirRem(sftp, args):
+    log = loggerclass.getLogger('chDirRem')
     if(len(args) > 2):
         print("Please only enter one directory at a time. ex: cd remoteDirectory")
+        log.info("Please only enter one directory at a time. ex: cd remoteDirectory")
         return
     if(len(args) < 2):
         print("Please enter the directory to change into. ex: cd remoteDirectory")
+        log.info("Please enter the directory to change into. ex: cd remoteDirectory")
         return
     if(sftp.exists(args[1])):
         sftp.chdir(args[1])
         print("-> " + sftp.pwd)
     else:
         print("That directory does not exist")
+        log.info("That directory does not exist")
         
 #Layla
 def renameRemote(sftp, args):
+    log = loggerclass.getLogger('renameRemote')
     if len(args) != 3:
         print("How to use the rename command: rename src.txt dest.txt")
+        log.info("How to use the rename command: rename src.txt dest.txt")
         return
     src = args[1]
     if sftp.exists(src):
@@ -365,12 +388,15 @@ def renameRemote(sftp, args):
             sftp.rename(src, dest)
         except IOError:
             print("Oops, you entered an invalid destination file name")
+            log.error("Oops, you entered an invalid destination file name")
             return
         else:
             print(src + " successfully renamed " + dest)
+            log.info(src + " successfully renamed " + dest)
             return
     else:
         print("The source file you entered does not exist.")
+        log.warn("The source file you entered does not exist.")
         
 #Varsha
 def rename_file_on_local(sftp, args=None):
@@ -422,6 +448,7 @@ def delFileRemote(sftp, args):
 # Saiteja G 8/8/2023
 # Function to delete directory on remote server
 def deleteDir(sftp, args):
+    log = loggerclass.getLogger('deleteDir')
     for x in args:
         if x != "rmd":
             remotedir = x
@@ -429,13 +456,17 @@ def deleteDir(sftp, args):
                 try:
                     sftp.rmdir(remotedir)
                     print(f"Performing Deletion of this directory: {remotedir}")
+                    log.info(f"Performing Deletion of this directory: {remotedir}")
                 except:
                     print("Error while performing this action. Deletion unsuccessful")
+                    log.error("Error while performing this action. Deletion unsuccessful")
                 else:
                     print("Deletion Successful")
+                    log.info("Deletion Successful")
             else:
-                print(f"Deletion unsuccessful: {x} does not exist!")    
-
+                print(f"Deletion unsuccessful: {x} does not exist!")
+                log.error(f"Deletion unsuccessful: {x} does not exist!")
+                
 # to register a new command with the Command Decoder copy the form below:
 commands["command_name"] = command_function_name
 # copy to here:

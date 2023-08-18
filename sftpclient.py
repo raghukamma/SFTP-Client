@@ -6,6 +6,7 @@ This file contains the client menus before connected to a server
 import sftpshell
 import getpass
 import json
+import loggerclass
 from termcolor import colored
 
 class SFTPClient:
@@ -19,6 +20,7 @@ class SFTPClient:
     s_sel_host = 5
 
     def __init__(self):
+        log = loggerclass.getLogger('__init__')
         self.state = 0
         self.is_running = True
         self.shell = sftpshell.SFTPShell()
@@ -34,24 +36,33 @@ class SFTPClient:
             except json.JSONDecodeError as e:
                 if len(read) > 1:
                     print("saved connections file may be improperly formatted")
+                    log.info("saved connections file may be improperly formatted")
                 # log decode error here
                 pass
 
     def save_login(self, host, user, passw):
-        self.saved_logins[host] = {user: passw}
+        log = loggerclass.getLogger('save_login')
+        if host not in self.saved_logins.keys():
+            self.saved_logins[host] = {user: passw}
+        else:
+            self.saved_logins[host][user] = passw
         with open("saved_cons.json", "w") as cons:
             try:
                 cons.write(json.dumps(self.saved_logins))
             except Exception as e:
                 print("Something went wrong saving connection")
+                log.error("Something went wrong saving connection for user: "+user)
 
 
     def welcome(self):
+        log = loggerclass.getLogger('welcome')
         print(colored("\nWelcome to Group 2's SFTP Client!", 'green', attrs=['bold', 'blink']))
+        log.info("\nWelcome to Group 2's SFTP Client!")
         print("---------------------------------")
         self.state = self.s_main
 
     def main(self):
+        log = loggerclass.getLogger('main')
         print("\nWhat would you like to do?:")
         print("(c)onnect to a new server")
         print("(s)aved connections")
@@ -64,12 +75,15 @@ class SFTPClient:
             self.state = self.s_sel_host
         elif user_input == 'e':
             self.state = self.s_exit
+            log.info("Connection Closed")
             print(colored("\nConnection Closed", 'red', attrs=['bold']))
 
     def connect(self):
+        log = loggerclass.getLogger('connect')
         host = input("Enter the name of the host to connect to: ")
         user = input("Enter your username: ")
         passw = getpass.getpass(stream=None)
+        log.info("User who is trying to connect is: "+user)
 
         user_input = str()
         if host not in self.saved_logins.keys() or user not in self.saved_logins[host].keys():
@@ -77,6 +91,7 @@ class SFTPClient:
                 print("Would you like to save this login? y/n: ", end='')
                 user_input = input()
             if user_input.lower() == 'y':
+                log.info(user+" opted to save the login information.")
                 self.save_login(host, user, passw)
             
         self.shell.login(host, user, passw)
@@ -84,16 +99,19 @@ class SFTPClient:
         self.state = self.s_main
 
     def select_host(self):
+        log = loggerclass.getLogger('select_host')
         selected = False # redundant, I could just use while True, but I don't like that
         while not selected:
+            log.info("User is going to select a host")
             print("Please select a Host:")
             hosts = list(self.saved_logins.keys())
             for k in range(len(hosts)):
                 print(k,": ",hosts[k])
-            print("\nelect host number or (b)ack: ", end='')
+            print("\nSelect host number or (b)ack: ", end='')
             uin = input()
             print()
             if uin.lower() == 'b':
+                log.info("User has given option to select the host number or back . User opted back option.")
                 self.state = self.s_main
                 return
             try:
@@ -106,13 +124,16 @@ class SFTPClient:
                     self.state = self.s_sel_user
                     selected = True
                     print(colored(f"Host selected: {self.selected_host}\n", "green"))
+                    log.info(f"Host selected is: {self.selected_host}\n")
                     return
                 else:
                     print(colored(f"Please input a number from 0 to {len(hosts) - 1}\n", "red"))
     
     def select_user(self):
+        log = loggerclass.getLogger('select_user')
         selected = False # redundant, I could just use while True, but I don't like that
         while not selected:
+            log.info("Application user is going to select a user from the exisiting user details.")
             print(f"Please select a User from {self.selected_host}:")
             users = list(self.saved_logins[self.selected_host].keys())
             for k in range(len(users)):
@@ -121,6 +142,7 @@ class SFTPClient:
             uin = input()
             print()
             if uin.lower() == 'b':
+                log.info("Application user choosen the back option")
                 self.state = self.s_sel_host
                 return
             try:
@@ -138,6 +160,8 @@ class SFTPClient:
 
     def saved(self):
         # ISSUE #18: use saved connection information to connect
+        log = loggerclass.getLogger('saved')
+        log.info("Trying to connect with the selected login information from Saved connection pool")
         host = self.selected_host
         user = self.selected_user
         passw = self.saved_logins[host][user]
