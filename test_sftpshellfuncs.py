@@ -198,6 +198,53 @@ def test_rename_local_file(tmpdir, monkeypatch, capsys):
     # Clean up: remove the test directory
     test_dir.remove()
 
+
+
+# testing put in remote server
+def test_put_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    conn = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+    # make sure "test_put.txt" doesn't already exist on remote
+    assert conn.exists('test.txt') == False, 'test.txt already exists on remote server'
+
+    # call put remote
+    x = ['put', 'test_put.txt']
+    sftpshellfuncs.commands['put'](conn, x)
+    # check if the file got put
+    assert conn.exists('test_put.txt') == True
+    # clean up
+    conn.execute('rm test_put.txt')
+    assert conn.exists('test_put.txt') == False, "test_put_remote has failed cleanup, this will effect future tests"
+
+    return # test_put_remote()
+
+
+# testing put multiple in remote server
+def test_put_multiple_remote():
+    #setting the connection
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+    conn = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
+
+    # make sure "test_put.txt" doesn't already exist on remote
+    assert conn.exists('test.txt') == False, 'test_put.txt already exists on remote server'
+    assert conn.exists('test_put.txt') == False, 'test_put.txt already exists on remote server'
+
+    # call put remote
+    x = ['put', 'test.txt', 'test_put.txt']
+    sftpshellfuncs.commands['put'](conn, x)
+    # check if the file got put
+    assert conn.exists('test.txt') == True
+    assert conn.exists('test_put.txt') == True
+    # clean up
+    conn.execute('rm test.txt test_put.txt')
+    assert conn.exists('test.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
+    assert conn.exists('test_put.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
+
+    return # test_put_remote()
+
 #using monkeypatch to mock the user input
 #using capsys to capture the output printed
 
@@ -346,50 +393,3 @@ def test_make_directory_remote():
     z = ["rmd" , "test_mkdir"]
     sftpshellfuncs.commands["rmd"](valfoo, z)
     assert "test_mkdir" not in valfoo.pwd
-
-
-# testing put in remote server
-def test_put_remote():
-    #setting the connection
-    cnopts = pysftp.CnOpts()
-    cnopts.hostkeys = None
-    conn = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
-
-    # make sure "test_put.txt" doesn't already exist on remote
-    assert conn.exists('test_put.txt') == False, 'test_put.txt already exists on remote server'
-
-    # call put remote
-    x = ['put', 'test_put.txt']
-    sftpshellfuncs.commands['put'](conn, x)
-    # check if the file got put
-    assert conn.exists('test_put.txt')
-    # clean up
-    conn.execute('rm test_put.txt')
-    assert conn.exists('test_put.txt') == False, "test_put_remote has failed cleanup, this will effect future tests"
-
-    return # test_put_remote()
-
-
-# testing put multiple in remote server
-def test_put_remote():
-    #setting the connection
-    cnopts = pysftp.CnOpts()
-    cnopts.hostkeys = None
-    conn = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
-
-    # make sure "test_put.txt" doesn't already exist on remote
-    assert conn.exists('test_put.txt') == False, 'test_put.txt already exists on remote server'
-    assert conn.exists('test_put_multiple.txt') == False, 'test_put_multiple.txt already exists on remote server'
-
-    # call put remote
-    x = ['put', 'test_put.txt', 'test_put_multiple.txt']
-    sftpshellfuncs.commands['put'](conn, x)
-    # check if the file got put
-    assert conn.exists('test_put.txt')
-    assert conn.exists('test_put_multiple.txt')
-    # clean up
-    conn.execute('rm test_put.txt test_put_multiple.txt')
-    assert conn.exists('test_put.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
-    assert conn.exists('test_put_multiple.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
-
-    return # test_put_remote()
