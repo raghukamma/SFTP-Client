@@ -378,18 +378,18 @@ def test_put_remote():
     conn = pysftp.Connection('linux.cs.pdx.edu', username= usern, password= passwd, cnopts=cnopts)
 
     # make sure "test_put.txt" doesn't already exist on remote
-    assert conn.exists('test_put.txt') == False, 'test_put.txt already exists on remote server'
-    assert conn.exists('test_put_multiple.txt') == False, 'test_put_multiple.txt already exists on remote server'
+    assert conn.exists('test.txt') == False, 'test_put.txt already exists on remote server'
+    assert conn.exists('test_put.txt') == False, 'test_put_multiple.txt already exists on remote server'
 
     # call put remote
-    x = ['put', 'test_put.txt', 'test_put_multiple.txt']
+    x = ['put', 'test.txt', 'test_put.txt']
     sftpshellfuncs.commands['put'](conn, x)
     # check if the file got put
+    assert conn.exists('test.txt')
     assert conn.exists('test_put.txt')
-    assert conn.exists('test_put_multiple.txt')
     # clean up
-    conn.execute('rm test_put.txt test_put_multiple.txt')
+    conn.execute('rm test.txt test_put.txt')
+    assert conn.exists('test.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
     assert conn.exists('test_put.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
-    assert conn.exists('test_put_multiple.txt') == False, "test_put_multiple_remote has failed cleanup, this will effect future tests"
 
     return # test_put_remote()
