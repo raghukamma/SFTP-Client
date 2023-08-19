@@ -230,7 +230,7 @@ def test_put_multiple_remote():
 
     # make sure "test_put.txt" doesn't already exist on remote
     assert conn.exists('test.txt') == False, 'test_put.txt already exists on remote server'
-    assert conn.exists('test_put.txt') == False, 'test_put_multiple.txt already exists on remote server'
+    assert conn.exists('test_put.txt') == False, 'test_put.txt already exists on remote server'
 
     # call put remote
     x = ['put', 'test.txt', 'test_put.txt']
