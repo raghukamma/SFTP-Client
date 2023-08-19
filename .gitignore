@@ -1,4 +1,4 @@
 # exclude saved logins so we don't upload passwords to github
-unit_test_connection.json
+data.json
 saved_cons.json
 *.log
